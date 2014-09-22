@@ -524,11 +524,11 @@ is_non_neg_float_arg([]) ->
     true.
 
 
-%% @doc  Show a message on standard_error indicating the command line options and
+%% @doc  Show a message on standard_io indicating the command line options and
 %%       arguments that are supported by the program.
 -spec usage([option_spec()], string()) -> ok.
 usage(OptSpecList, ProgramName) ->
-    usage(OptSpecList, ProgramName, standard_error).
+    usage(OptSpecList, ProgramName, standard_io).
 
 
 %% @doc  Show a message on standard_error or standard_io indicating the command line options and
@@ -541,7 +541,7 @@ usage(OptSpecList, ProgramName, OutputStream) when is_atom(OutputStream) ->
 %%       arguments that are supported by the program. The CmdLineTail argument
 %%       is a string that is added to the end of the usage command line.
 usage(OptSpecList, ProgramName, CmdLineTail) ->
-    usage(OptSpecList, ProgramName, CmdLineTail, standard_error).
+    usage(OptSpecList, ProgramName, CmdLineTail, standard_io).
 
 
 %% @doc  Show a message on standard_error or standard_io indicating the command line options and
@@ -556,7 +556,7 @@ usage(OptSpecList, ProgramName, CmdLineTail, OutputStream) when is_atom(OutputSt
 %%       arguments are a string that is added to the end of the usage command line
 %%       and a list of tuples that are added to the end of the options' help lines.
 usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail) ->
-    usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail, standard_error).
+    usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail, standard_io).
 
 
 %% @doc  Show a message on standard_error or standard_io indicating the command line options and
