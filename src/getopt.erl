@@ -688,26 +688,33 @@ usage_cmd_line_option({Name, Short, Long, ArgSpec, _Help}) when is_atom(ArgSpec)
     %% For options with no default argument.
     if
         %% For options with short form and argument.
-        Short =/= undefined -> [$[, $-, Short, $\s, $<, atom_to_list(Name), $>, $]];
+        Short =/= undefined -> [$[, $-, Short, $\s, $<, usage_cmd_line_option_format(Name), $>, $]];
         %% For options with only long form and argument.
-        Long =/= undefined  -> [$[, $-, $-, Long, $\s, $<, atom_to_list(Name), $>, $]];
+        Long =/= undefined  -> [$[, $-, $-, Long, $\s, $<, usage_cmd_line_option_format(Name), $>, $]];
         %% For options with neither short nor long form and argument.
-        true                -> [$[, $<, atom_to_list(Name), $>, $]]
+        true                -> [$[, $<, usage_cmd_line_option_format(Name), $>, $]]
     end;
 usage_cmd_line_option({Name, Short, Long, ArgSpec, _Help}) when is_tuple(ArgSpec) ->
     %% For options with default argument.
     if
         %% For options with short form and default argument.
-        Short =/= undefined -> [$[, $-, Short, $\s, $[, $<, atom_to_list(Name), $>, $], $]];
+        Short =/= undefined -> [$[, $-, Short, $\s, $[, $<, usage_cmd_line_option_format(Name), $>, $], $]];
         %% For options with only long form and default argument.
-        Long =/= undefined  -> [$[, $-, $-, Long, $\s, $[, $<, atom_to_list(Name), $>, $], $]];
+        Long =/= undefined  -> [$[, $-, $-, Long, $\s, $[, $<, usage_cmd_line_option_format(Name), $>, $], $]];
         %% For options with neither short nor long form and default argument.
-        true                -> [$[, $<, atom_to_list(Name), $>, $]]
+        true                -> [$[, $<, usage_cmd_line_option_format(Name), $>, $]]
     end;
 usage_cmd_line_option(Option) when is_list(Option) ->
     %% For custom options that are added to the command line.
     Option.
 
+%% @doc allow binaries as keys
+usage_cmd_line_option_format(Name) ->
+    if is_binary(Name) ->
+             Name;
+       true ->
+	    atom_to_list(Name)
+    end.
 
 %% @doc Return a list of help messages to print for each of the options and arguments.
 -spec usage_options([option_spec()]) -> [string()].
