@@ -18,6 +18,21 @@ own binary file and will give precedence to its own modules over the ones in
 the project.
 
 
+Add to Your Project
+-------------------
+
+To include ``getopt`` in your Erlang, LFE, or Elixir project, simply add it
+to your ``rebar.config`` file:
+
+```erlang
+{deps, [
+   ...
+   {getopt, ".*", {git, "https://github.com/oubiwann/getopt-erl.git", {tag, "v0.8.3"}}},
+   ...
+  ]}.
+```
+
+
 Installation
 ------------
 
