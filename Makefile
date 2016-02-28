@@ -1,6 +1,6 @@
 APPLICATION := getopt
 
-REBAR=$(shell which rebar || echo ./rebar)
+REBAR=$(shell which rebar)
 ERL := erl
 EPATH := -pa ebin
 
