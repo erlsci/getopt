@@ -14,7 +14,7 @@
 -export([parse/2, check/2, check/3,
          parse_and_check/2, parse_and_check/3,
          format_error/2,
-         usage/2, usage/3, usage/4, tokenize/1]).
+         usage/2, usage/3, usage/4, usage/5, tokenize/1]).
 -export([usage_cmd_line/2]).
 
 -define(LINE_LENGTH, 75).
@@ -577,11 +577,11 @@ is_non_neg_float_arg([]) ->
     true.
 
 
-%% @doc  Show a message on standard_error indicating the command line options and
+%% @doc  Show a message on standard_io indicating the command line options and
 %%       arguments that are supported by the program.
 -spec usage([option_spec()], string()) -> ok.
 usage(OptSpecList, ProgramName) ->
-    usage(OptSpecList, ProgramName, standard_error).
+    usage(OptSpecList, ProgramName, standard_io).
 
 
 %% @doc  Show a message on standard_error or standard_io indicating the command line options and
@@ -589,12 +589,12 @@ usage(OptSpecList, ProgramName) ->
 -spec usage([option_spec()], string(), output_stream() | string()) -> ok.
 usage(OptSpecList, ProgramName, OutputStream) when is_atom(OutputStream) ->
     io:format(OutputStream, "~ts~n~n~ts~n",
-              [unicode:characters_to_list(usage_cmd_line(ProgramName, OptSpecList)), unicode:characters_to_list(usage_options(OptSpecList))]);
+              [usage_cmd_line(ProgramName, OptSpecList), usage_options(OptSpecList)]);
 %% @doc  Show a message on standard_error indicating the command line options and
 %%       arguments that are supported by the program. The CmdLineTail argument
 %%       is a string that is added to the end of the usage command line.
 usage(OptSpecList, ProgramName, CmdLineTail) ->
-    usage(OptSpecList, ProgramName, CmdLineTail, standard_error).
+    usage(OptSpecList, ProgramName, CmdLineTail, standard_io).
 
 
 %% @doc  Show a message on standard_error or standard_io indicating the command line options and
@@ -603,13 +603,13 @@ usage(OptSpecList, ProgramName, CmdLineTail) ->
 -spec usage([option_spec()], ProgramName :: string(), CmdLineTail :: string(), output_stream() | [{string(), string()}]) -> ok.
 usage(OptSpecList, ProgramName, CmdLineTail, OutputStream) when is_atom(OutputStream) ->
     io:format(OutputStream, "~ts~n~n~ts~n",
-              [unicode:characters_to_list(usage_cmd_line(ProgramName, OptSpecList, CmdLineTail)), unicode:characters_to_list(usage_options(OptSpecList))]);
+              [usage_cmd_line(ProgramName, OptSpecList, CmdLineTail), usage_options(OptSpecList)]);
 %% @doc  Show a message on standard_error indicating the command line options and
 %%       arguments that are supported by the program. The CmdLineTail and OptionsTail
 %%       arguments are a string that is added to the end of the usage command line
 %%       and a list of tuples that are added to the end of the options' help lines.
 usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail) ->
-    usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail, standard_error).
+    usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail, standard_io).
 
 
 %% @doc  Show a message on standard_error or standard_io indicating the command line options and
@@ -620,7 +620,7 @@ usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail) ->
             [{OptionName :: string(), Help :: string()}], output_stream()) -> ok.
 usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail, OutputStream) ->
     io:format(OutputStream, "~ts~n~n~ts~n",
-              [unicode:characters_to_list(usage_cmd_line(ProgramName, OptSpecList, CmdLineTail)), unicode:characters_to_list(usage_options(OptSpecList, OptionsTail))]).
+              [usage_cmd_line(ProgramName, OptSpecList, CmdLineTail), usage_options(OptSpecList, OptionsTail)]).
 
 
 -spec usage_cmd_line(ProgramName :: string(), [option_spec()]) -> iolist().
@@ -713,7 +713,7 @@ usage_cmd_line_option_format(Name) ->
     if is_binary(Name) ->
              Name;
        true ->
-	    atom_to_list(Name)
+             atom_to_list(Name)
     end.
 
 %% @doc Return a list of help messages to print for each of the options and arguments.
