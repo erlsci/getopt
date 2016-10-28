@@ -27,7 +27,7 @@ to your ``rebar.config`` file:
 ```erlang
 {deps, [
    ...
-   {getopt, ".*", {git, "https://github.com/oubiwann/getopt-erl.git", {tag, "v0.8.3"}}},
+   {getopt, ".*", {git, "https://github.com/erlsci/getopt.git", {tag, "v0.8.3"}}},
    ...
   ]}.
 ```
