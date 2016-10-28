@@ -4,4 +4,14 @@
   {vsn, "0.8.4"},
   {modules, []},
   {registered, []},
-  {applications, [kernel, stdlib]}]}.
+  {applications, [kernel, stdlib]},
+  %% Package metadata:
+  {pkg_name, erlsci_getopt},
+  {maintainers, ["Juan Jose Comellas"]},
+  {licenses, ["BSD-3"]},
+  {links,
+   [{"GitHub", "https://github.com/erlsci/getopt"},
+    {"Gitlab", "https://gitlab.com/erlsci/getopt"},
+    {"Hex", "https://hex.pm/packages/erlsci_getopt"}
+   ]}
+ ]}.
