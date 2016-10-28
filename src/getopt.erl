@@ -11,10 +11,12 @@
 -module(getopt).
 -author('juanjo@comellas.org').
 
--export([parse/2, check/2, check/3,
+-export([parse/2,
+         check/2, check/3,
          parse_and_check/2, parse_and_check/3,
          format_error/2,
-         usage/2, usage/3, usage/4, usage/5, tokenize/1]).
+         usage/2, usage/3, usage/4, usage/5, usage/6,
+         tokenize/1]).
 -export([usage_cmd_line/2]).
 
 -define(LINE_LENGTH, 75).
@@ -194,25 +196,21 @@ parse(OptSpecList, OptAcc, ArgAcc, _ArgPos, []) ->
 format_error(OptSpecList, {error, Reason}) ->
     format_error(OptSpecList, Reason);
 format_error(OptSpecList, {missing_required_option, Name}) ->
-    {_Name, Short, Long, _Type, _Help} = lists:keyfind(Name, 1, OptSpecList),
-    lists:flatten(["missing required option: -", [Short], " (", to_string(Long), ")"]);
-format_error(OptSpecList, {missing_option_arg, Name}) ->
-    Opt = lists:keyfind(Name, 1, OptSpecList),
-    lists:flatten(["missing required option argument: -", [element(2,Opt)], " (",
-        to_string(Name), ")"]);
-format_error(OptSpecList, {invalid_option_arg, {Name, Arg}}) ->
-    L = case lists:keyfind(Name, 1, OptSpecList) of
-        {_, Short, undefined, _, _}  -> [$-, Short, $ , to_string(Arg)];
-        {_, _, Long, _, _}           -> ["--", Long, $=, to_string(Arg)]
-    end,
-    lists:flatten(["option \'", to_string(Name) ++ "\' has invalid argument: ", L]);
-format_error(_OptSpecList, {invalid_option_arg, OptStr}) ->
-    lists:flatten(["invalid option argument: ", to_string(OptStr)]);
+    OptStr = case lists:keyfind(Name, 1, OptSpecList) of
+                 {Name,  undefined, undefined, _Type, _Help} -> ["<", to_string(Name), ">"];
+                 {_Name, undefined,      Long, _Type, _Help} -> ["--", Long];
+                 {_Name,     Short, undefined, _Type, _Help} -> ["-", Short];
+                 {_Name,     Short,      Long, _Type, _Help} -> ["-", Short, " (", Long, ")"]
+             end,
+    lists:flatten(["missing required option: ", OptStr]);
 format_error(_OptSpecList, {invalid_option, OptStr}) ->
     lists:flatten(["invalid option: ", to_string(OptStr)]);
+format_error(_OptSpecList, {invalid_option_arg, {Name, Arg}}) ->
+    lists:flatten(["option \'", to_string(Name) ++ "\' has invalid argument: ", to_string(Arg)]);
+format_error(_OptSpecList, {invalid_option_arg, OptStr}) ->
+    lists:flatten(["invalid option argument: ", to_string(OptStr)]);
 format_error(_OptSpecList, {Reason, Data}) ->
     lists:flatten([to_string(Reason), " ", to_string(Data)]).
-
 
 %% @doc Parse a long option, add it to the option accumulator and continue
 %%      parsing the rest of the arguments recursively.
@@ -621,6 +619,22 @@ usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail) ->
 usage(OptSpecList, ProgramName, CmdLineTail, OptionsTail, OutputStream) ->
     io:format(OutputStream, "~ts~n~n~ts~n",
               [usage_cmd_line(ProgramName, OptSpecList, CmdLineTail), usage_options(OptSpecList, OptionsTail)]).
+
+%% @doc Show a message on standard_error or standard_io indicating the
+%%      command line options and arguments that are supported by the
+%%      program. The Description allows for structured command line usage
+%%      that works in addition to the standard options, and appears between
+%%      the usage_cmd_line and usage_options sections.  The CmdLineTail and
+%%      OptionsTail arguments are a string that is added to the end of the
+%%      usage command line and a list of tuples that are added to the end of
+%%      the options' help lines.
+-spec usage([option_spec()], ProgramName :: string(), CmdLineTail :: string(),
+            Description :: string(),
+            [{OptionName :: string(), Help :: string()}],
+            output_stream()) -> ok.
+usage(OptSpecList, ProgramName, CmdLineTail, Description, OptionsTail, OutputStream) ->
+    io:format(OutputStream, "~ts~n~n~ts~n~n~ts~n",
+              [unicode:characters_to_list(usage_cmd_line(ProgramName, OptSpecList, CmdLineTail)), Description, unicode:characters_to_list(usage_options(OptSpecList, OptionsTail))]).
 
 
 -spec usage_cmd_line(ProgramName :: string(), [option_spec()]) -> iolist().
